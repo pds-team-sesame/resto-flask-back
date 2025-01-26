@@ -1,28 +1,22 @@
 from extensions import db
+from datetime import datetime
 
-
+# Table Avis
 class Avis(db.Model):
-    __tablename__ = 'avis'
-    
     id = db.Column(db.Integer, primary_key=True)
-    commentaire = db.Column(db.String(255), nullable=False)
+    commentaire = db.Column(db.Text, nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    status = db.Column(db.String(50), nullable=False, default='en attente')  # Exemple: en attente, validé, refusé
 
-    # One-to-Many relationship with User
-    #user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    #user = db.relationship('User', backref='avis')
+    # Lien avec la commande
+    commande_id = db.Column(db.Integer, db.ForeignKey('commande.id'))
+    commande = db.relationship('Commande', back_populates='avis')
 
-    def __init__(self, commentaire ):
-        self.commentaire = commentaire
-       # self.user_id = user_id
+    # Client qui a créé l'avis
+    client_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    client = db.relationship('User', foreign_keys=[client_id], back_populates='avis_clients')
 
-    @property
-    def data(self):
-        return {
-            'id': self.id,
-            'commentaire': self.commentaire,
-            #'user': self.user.data
-        }
-    def save(self):
-        from .user import User
-        db.session.add(self)  
-        db.session.commit() 
+    # Admin qui a modéré l'avis
+    admin_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    admin = db.relationship('User', foreign_keys=[admin_id], back_populates='avis_admins')
