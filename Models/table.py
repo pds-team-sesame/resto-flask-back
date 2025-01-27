@@ -7,3 +7,11 @@ class Table(db.Model):
     restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurant.id'))
     restaurant = db.relationship('Restaurant', back_populates='tables')
     reservations = db.relationship('Reservation', back_populates='table', cascade='all, delete-orphan')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "number": self.number,
+            "capacity": self.capacity,
+            "restaurant_id": self.restaurant_id,
+        }

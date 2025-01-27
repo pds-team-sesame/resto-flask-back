@@ -10,3 +10,12 @@ class Livraison(db.Model):
     livreur_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     commande = db.relationship('Commande', back_populates='livraison')
     livreur = db.relationship('User', back_populates='livraisons')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "date": self.date.isoformat(),
+            "status": self.status,
+            "commande_id": self.commande_id,
+            "livreur_id": self.livreur_id,
+        }
